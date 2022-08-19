@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    container_name: container-send-email-app
+    # command: bash -c "npm install && npm i -g @adonisjs/cli && adonis serve --dev"
+    ports:
+      - "3333:3333"
+    networks:
+      - queue-network
+    volumes:
+      - .:/home/app
+
+  redis-compose:
+    image: redis:alpine
+    command: redis-server --appendonly no
+    container_name: "container-send-email-job"
+    ports:
+      - "6379:6379"
+    networks:
+      - queue-network
+    healthcheck:
+      test:
+        ["CMD", "redis-cli", "ping"]
+
+networks:
+  queue-network:

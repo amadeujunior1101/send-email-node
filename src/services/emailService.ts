@@ -1,18 +1,20 @@
 import { Request, Response } from "express";
-import registrationEmail from "../config/registrationEmail";
+import Queue from "../libs/queue";
 
 export default class EmailService {
   async store(req: Request, res: Response) {
     try {
       const { name, email, password } = req.body;
 
-      const user = {
+      const user: any = {
         name,
         email,
         password,
       };
 
-      await registrationEmail(user);
+      await Queue.add("RegistrationMail", { user });
+
+      // await Queue.add("UserReport", { user });
 
       return res.json(user);
     } catch (error) {
